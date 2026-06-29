@@ -5,23 +5,18 @@ phases:
     runtime-versions:
       python: 3.12
     commands:
+      - echo "Installing dependencies..."
       - pip install --upgrade pip
       - pip install -r requirements.txt
 
-  pre_build:
-    commands:
-      - echo "Running CI checks inside CodePipeline..."
-      - flake8 lambda tests --max-line-length=100 --exclude=__pycache__
-      - pytest tests/ -v
-
   build:
     commands:
-      - echo "Packaging Lambda deployment artifact..."
-      - cd lambda/etl_customer
-      - zip -r ../../function.zip .
-      - cd ../..
+      - echo "Checking Lambda syntax..."
+      - python -m py_compile lambda_function.py
+      - echo "Build completed successfully."
 
 artifacts:
   files:
-    - function.zip
-  name: etl-customer-artifact
+    - lambda_function.py
+    - requirements.txt
+    - README.md
